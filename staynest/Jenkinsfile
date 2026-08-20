@@ -1,0 +1,32 @@
+pipeline {
+    agent any
+
+    stages {
+
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Verify Project') {
+            steps {
+                sh 'echo "StayNest project downloaded successfully"'
+                sh 'ls -la'
+                sh 'echo "Frontend:"'
+                sh 'ls -la frontend'
+                sh 'echo "Backend:"'
+                sh 'ls -la backend'
+            }
+        }
+
+        stage('Verify Dockerfiles') {
+            steps {
+                sh 'test -f frontend/Dockerfile'
+                sh 'test -f backend/Dockerfile'
+                sh 'echo "Frontend Dockerfile found"'
+                sh 'echo "Backend Dockerfile found"'
+            }
+        }
+    }
+}
