@@ -24,15 +24,17 @@ pipeline {
         stage('Verify Project') {
             steps {
                 sh '''
+                    echo "=========================================="
                     echo "Checking project structure..."
+                    echo "=========================================="
 
-                    test -f frontend/Dockerfile
-                    test -f backend/Dockerfile
-                    test -f frontend/nginx.conf
-                    test -f backend/requirements.txt
-                    test -f backend/app.py
+                    test -f staynest/frontend/Dockerfile
+                    test -f staynest/backend/Dockerfile
+                    test -f staynest/frontend/nginx.conf
+                    test -f staynest/backend/requirements.txt
+                    test -f staynest/backend/app.py
 
-                    echo "Project structure verified."
+                    echo "Project structure verified successfully."
                 '''
             }
         }
@@ -40,12 +42,16 @@ pipeline {
         stage('Build Frontend Docker Image') {
             steps {
                 sh '''
-                    echo "Building frontend image..."
+                    echo "=========================================="
+                    echo "Building Frontend Docker Image"
+                    echo "=========================================="
 
                     docker build \
                         -t ${FRONTEND_ECR}:${IMAGE_TAG} \
                         -t ${FRONTEND_ECR}:latest \
-                        ./frontend
+                        ./staynest/frontend
+
+                    echo "Frontend Docker image built successfully."
                 '''
             }
         }
@@ -53,12 +59,16 @@ pipeline {
         stage('Build Backend Docker Image') {
             steps {
                 sh '''
-                    echo "Building backend image..."
+                    echo "=========================================="
+                    echo "Building Backend Docker Image"
+                    echo "=========================================="
 
                     docker build \
                         -t ${BACKEND_ECR}:${IMAGE_TAG} \
                         -t ${BACKEND_ECR}:latest \
-                        ./backend
+                        ./staynest/backend
+
+                    echo "Backend Docker image built successfully."
                 '''
             }
         }
@@ -66,13 +76,17 @@ pipeline {
         stage('Login to Amazon ECR') {
             steps {
                 sh '''
-                    echo "Logging into Amazon ECR..."
+                    echo "=========================================="
+                    echo "Logging into Amazon ECR"
+                    echo "=========================================="
 
                     aws ecr get-login-password \
                         --region ${AWS_REGION} | \
                     docker login \
                         --username AWS \
                         --password-stdin ${ECR_REGISTRY}
+
+                    echo "ECR login successful."
                 '''
             }
         }
@@ -80,7 +94,7 @@ pipeline {
         stage('Tag Frontend Image') {
             steps {
                 sh '''
-                    echo "Tagging frontend image..."
+                    echo "Tagging Frontend Docker Image..."
 
                     docker tag \
                         ${FRONTEND_ECR}:${IMAGE_TAG} \
@@ -89,6 +103,8 @@ pipeline {
                     docker tag \
                         ${FRONTEND_ECR}:latest \
                         ${ECR_REGISTRY}/${FRONTEND_ECR}:latest
+
+                    echo "Frontend image tagged successfully."
                 '''
             }
         }
@@ -96,7 +112,7 @@ pipeline {
         stage('Tag Backend Image') {
             steps {
                 sh '''
-                    echo "Tagging backend image..."
+                    echo "Tagging Backend Docker Image..."
 
                     docker tag \
                         ${BACKEND_ECR}:${IMAGE_TAG} \
@@ -105,6 +121,8 @@ pipeline {
                     docker tag \
                         ${BACKEND_ECR}:latest \
                         ${ECR_REGISTRY}/${BACKEND_ECR}:latest
+
+                    echo "Backend image tagged successfully."
                 '''
             }
         }
@@ -112,13 +130,17 @@ pipeline {
         stage('Push Frontend to ECR') {
             steps {
                 sh '''
-                    echo "Pushing frontend image..."
+                    echo "=========================================="
+                    echo "Pushing Frontend Image to ECR"
+                    echo "=========================================="
 
                     docker push \
                         ${ECR_REGISTRY}/${FRONTEND_ECR}:${IMAGE_TAG}
 
                     docker push \
                         ${ECR_REGISTRY}/${FRONTEND_ECR}:latest
+
+                    echo "Frontend image pushed successfully."
                 '''
             }
         }
@@ -126,13 +148,17 @@ pipeline {
         stage('Push Backend to ECR') {
             steps {
                 sh '''
-                    echo "Pushing backend image..."
+                    echo "=========================================="
+                    echo "Pushing Backend Image to ECR"
+                    echo "=========================================="
 
                     docker push \
                         ${ECR_REGISTRY}/${BACKEND_ECR}:${IMAGE_TAG}
 
                     docker push \
                         ${ECR_REGISTRY}/${BACKEND_ECR}:latest
+
+                    echo "Backend image pushed successfully."
                 '''
             }
         }
@@ -141,15 +167,23 @@ pipeline {
     post {
         success {
             echo "=========================================="
-            echo "BUILD SUCCESSFUL"
+            echo "       BUILD SUCCESSFUL"
             echo "=========================================="
-            echo "Frontend: ${ECR_REGISTRY}/${FRONTEND_ECR}:${IMAGE_TAG}"
-            echo "Backend : ${ECR_REGISTRY}/${BACKEND_ECR}:${IMAGE_TAG}"
+
+            echo "Frontend ECR:"
+            echo "${ECR_REGISTRY}/${FRONTEND_ECR}:${IMAGE_TAG}"
+
+            echo "Backend ECR:"
+            echo "${ECR_REGISTRY}/${BACKEND_ECR}:${IMAGE_TAG}"
+
+            echo "=========================================="
         }
 
         failure {
             echo "=========================================="
-            echo "BUILD FAILED"
+            echo "          BUILD FAILED"
+            echo "=========================================="
+            echo "Check the Console Output for the error."
             echo "=========================================="
         }
 
