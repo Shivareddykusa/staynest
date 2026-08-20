@@ -1,0 +1,191 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StayNest — Find Your Perfect Vacation Stay</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <div class="nav-inner">
+      <a href="index.html" class="logo">
+        <span class="logo-icon">🏡</span>
+        <span>Stay<strong>Nest</strong></span>
+      </a>
+
+      <div class="nav-links">
+        <a href="index.html">Explore</a>
+        <a href="host.html" id="nav-host-link" style="display:none;">Host Dashboard</a>
+      </div>
+
+      <div class="nav-actions">
+        <a href="login.html" id="nav-login" class="btn btn-outline">Log in</a>
+        <a href="register.html" id="nav-register" class="btn btn-primary">Sign up</a>
+
+        <!-- User profile dropdown (visible when logged in) -->
+        <div class="user-menu" id="nav-user-menu" style="display:none;">
+          <button class="user-avatar" id="nav-user-initial" onclick="toggleDropdown()" title="User Profile">U</button>
+          <div class="user-dropdown" id="user-dropdown">
+            <div class="user-dropdown-header">
+              <strong id="drop-name">User</strong>
+              <small id="drop-email">user@example.com</small>
+            </div>
+            <a href="booking.html" class="dropdown-item">📅 My Bookings</a>
+            <a href="host.html" class="dropdown-item">🏠 Host a Property</a>
+            <button class="dropdown-item danger" id="btn-logout">🚪 Log out</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <header class="hero">
+    <div class="hero-content">
+      <span class="hero-badge">Vacation Rentals & Experiences</span>
+      <h1>Find your perfect stay with <span>StayNest</span></h1>
+      <p>Discover handpicked villas, cabins, beachfront homes, and unique stays worldwide.</p>
+
+      <!-- Search Bar -->
+      <form class="search-box" id="hero-search-form">
+        <input type="text" id="search-input" placeholder="Search by destination or property name (e.g. Goa, Cabin)..." autocomplete="off">
+        <button type="submit" class="search-btn">
+          <span>🔍</span> Search
+        </button>
+      </form>
+    </div>
+  </header>
+
+  <!-- Featured Properties Section -->
+  <main class="section">
+    <div class="section-header">
+      <div>
+        <h2>Featured Stays</h2>
+        <p>Explore top-rated accommodations chosen by travelers</p>
+      </div>
+      <a href="#properties-grid" onclick="document.getElementById('search-input').value=''; loadProperties();">View all</a>
+    </div>
+
+    <div class="properties-grid" id="properties-grid">
+      <!-- Loaded dynamically via JavaScript fetch() from /api/properties -->
+      <div class="loading-spinner">
+        <div class="spinner"></div>
+        <span>Loading properties from database...</span>
+      </div>
+    </div>
+  </main>
+
+  <!-- Popular Destinations Section -->
+  <section class="section section-alt">
+    <div class="section-header">
+      <div>
+        <h2>Popular Destinations</h2>
+        <p>Incredible places waiting for your next adventure</p>
+      </div>
+    </div>
+
+    <div class="destinations-grid">
+      <div class="dest-card" onclick="document.getElementById('search-input').value='Goa'; loadProperties('Goa'); window.scrollTo({top: 500, behavior: 'smooth'});">
+        <img src="https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?w=500&q=80" alt="Goa">
+        <div class="dest-overlay">
+          <div class="dest-name">Goa</div>
+          <div class="dest-count">Beach & Sun</div>
+        </div>
+      </div>
+      <div class="dest-card" onclick="document.getElementById('search-input').value='Manali'; loadProperties('Manali'); window.scrollTo({top: 500, behavior: 'smooth'});">
+        <img src="https://images.unsplash.com/photo-1626621341517-bbf3d9990a23?w=500&q=80" alt="Manali">
+        <div class="dest-overlay">
+          <div class="dest-name">Manali</div>
+          <div class="dest-count">Mountains</div>
+        </div>
+      </div>
+      <div class="dest-card" onclick="document.getElementById('search-input').value='Jaipur'; loadProperties('Jaipur'); window.scrollTo({top: 500, behavior: 'smooth'});">
+        <img src="https://images.unsplash.com/photo-1477587458883-47145ed94245?w=500&q=80" alt="Jaipur">
+        <div class="dest-overlay">
+          <div class="dest-name">Jaipur</div>
+          <div class="dest-count">Heritage</div>
+        </div>
+      </div>
+      <div class="dest-card" onclick="document.getElementById('search-input').value='Udaipur'; loadProperties('Udaipur'); window.scrollTo({top: 500, behavior: 'smooth'});">
+        <img src="https://images.unsplash.com/photo-1599661046289-e31897846e41?w=500&q=80" alt="Udaipur">
+        <div class="dest-overlay">
+          <div class="dest-name">Udaipur</div>
+          <div class="dest-count">Lakes & Villas</div>
+        </div>
+      </div>
+      <div class="dest-card" onclick="document.getElementById('search-input').value='Kerala'; loadProperties('Kerala'); window.scrollTo({top: 500, behavior: 'smooth'});">
+        <img src="https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?w=500&q=80" alt="Kerala">
+        <div class="dest-overlay">
+          <div class="dest-name">Kerala</div>
+          <div class="dest-count">Backwaters</div>
+        </div>
+      </div>
+      <div class="dest-card" onclick="document.getElementById('search-input').value='Coorg'; loadProperties('Coorg'); window.scrollTo({top: 500, behavior: 'smooth'});">
+        <img src="https://images.unsplash.com/photo-1590050752117-238cb0fb12b1?w=500&q=80" alt="Coorg">
+        <div class="dest-overlay">
+          <div class="dest-name">Coorg</div>
+          <div class="dest-count">Nature Retreats</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Become a Host CTA Section -->
+  <section class="section">
+    <div class="cta-section">
+      <div class="cta-text">
+        <h2>Earn money hosting with StayNest</h2>
+        <p>List your apartment, villa, or vacation home and reach travelers looking for an unforgettable getaway.</p>
+      </div>
+      <a href="host.html" class="btn btn-primary btn-lg">Become a Host</a>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <div class="logo">🏡 <span>Stay<strong>Nest</strong></span></div>
+          <p>A modern three-tier vacation rental application built for DevOps & Cloud architecture.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Explore</h4>
+          <a href="index.html">All Properties</a>
+          <a href="booking.html">My Bookings</a>
+          <a href="host.html">Host Property</a>
+        </div>
+        <div class="footer-col">
+          <h4>Technology</h4>
+          <a href="#">Tier 1: HTML5 / CSS3 / JS</a>
+          <a href="#">Tier 2: Python / Flask / JWT</a>
+          <a href="#">Tier 3: MySQL / SQLAlchemy</a>
+        </div>
+        <div class="footer-col">
+          <h4>DevOps Stack</h4>
+          <a href="#">Docker & Docker Compose</a>
+          <a href="#">Jenkins CI/CD Pipeline</a>
+          <a href="#">AWS Deployment Ready</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <div>&copy; 2026 StayNest Inc. All rights reserved.</div>
+        <div>
+          <a href="#">Privacy</a>
+          <a href="#">Terms</a>
+          <a href="#">Security</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/properties.js"></script>
+</body>
+</html>

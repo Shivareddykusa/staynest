@@ -1,0 +1,97 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Bookings — StayNest</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <div class="nav-inner">
+      <a href="index.html" class="logo">
+        <span class="logo-icon">🏡</span>
+        <span>Stay<strong>Nest</strong></span>
+      </a>
+
+      <div class="nav-links">
+        <a href="index.html">Explore</a>
+        <a href="host.html" id="nav-host-link" style="display:none;">Host Dashboard</a>
+      </div>
+
+      <div class="nav-actions">
+        <a href="login.html" id="nav-login" class="btn btn-outline">Log in</a>
+        <a href="register.html" id="nav-register" class="btn btn-primary">Sign up</a>
+
+        <div class="user-menu" id="nav-user-menu" style="display:none;">
+          <button class="user-avatar" id="nav-user-initial" onclick="toggleDropdown()">U</button>
+          <div class="user-dropdown" id="user-dropdown">
+            <div class="user-dropdown-header">
+              <strong id="drop-name">User</strong>
+              <small id="drop-email">user@example.com</small>
+            </div>
+            <a href="booking.html" class="dropdown-item">📅 My Bookings</a>
+            <a href="host.html" class="dropdown-item">🏠 Host a Property</a>
+            <button class="dropdown-item danger" id="btn-logout">🚪 Log out</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Bookings List Section -->
+  <main class="bookings-page">
+    <h1>Your Trips & Reservations</h1>
+    <div id="bookings-list">
+      <div class="loading-spinner">
+        <div class="spinner"></div>
+        <span>Loading your bookings...</span>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <div class="logo">🏡 <span>Stay<strong>Nest</strong></span></div>
+          <p>A modern three-tier vacation rental application built for DevOps & Cloud architecture.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Explore</h4>
+          <a href="index.html">All Properties</a>
+          <a href="booking.html">My Bookings</a>
+          <a href="host.html">Host Property</a>
+        </div>
+        <div class="footer-col">
+          <h4>Technology</h4>
+          <a href="#">Tier 1: HTML5 / CSS3 / JS</a>
+          <a href="#">Tier 2: Python / Flask / JWT</a>
+          <a href="#">Tier 3: MySQL / SQLAlchemy</a>
+        </div>
+        <div class="footer-col">
+          <h4>DevOps Stack</h4>
+          <a href="#">Docker & Docker Compose</a>
+          <a href="#">Jenkins CI/CD Pipeline</a>
+          <a href="#">AWS Deployment Ready</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <div>&copy; 2026 StayNest Inc. All rights reserved.</div>
+        <div>
+          <a href="#">Privacy</a>
+          <a href="#">Terms</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/bookings.js"></script>
+</body>
+</html>

@@ -1,0 +1,92 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Log in — StayNest</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="form-page">
+
+  <div class="form-card">
+    <div style="text-align:center; margin-bottom: 24px;">
+      <a href="index.html" class="logo" style="justify-content:center;">
+        <span class="logo-icon">🏡</span>
+        <span>Stay<strong>Nest</strong></span>
+      </a>
+    </div>
+
+    <h1>Welcome back</h1>
+    <p>Sign in to your StayNest account to continue</p>
+
+    <form id="login-form">
+      <div class="form-group">
+        <label for="email">Email address</label>
+        <input type="email" id="email" class="form-control" placeholder="name@example.com" required autocomplete="email">
+        <div class="field-error" id="email-error"></div>
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" class="form-control" placeholder="••••••••" required autocomplete="current-password">
+        <div class="field-error" id="password-error"></div>
+      </div>
+
+      <button type="submit" id="btn-submit" class="btn btn-primary btn-block btn-lg" style="margin-top: 10px;">
+        Log in
+      </button>
+    </form>
+
+    <div class="form-footer">
+      Don't have an account? <a href="register.html">Sign up</a>
+    </div>
+
+    <div style="margin-top: 24px; padding: 14px; background: var(--gray-100); border-radius: var(--radius-sm); font-size: 0.8rem; color: var(--gray-500); line-height: 1.5;">
+      <strong>Demo Accounts:</strong><br>
+      Host: <code>host@staynest.com</code> / <code>password123</code><br>
+      Guest: <code>guest@staynest.com</code> / <code>password123</code>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // If already logged in, redirect home
+      if (isLoggedIn()) {
+        window.location.href = 'index.html';
+        return;
+      }
+
+      const form = document.getElementById('login-form');
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('btn-submit');
+        const email = document.getElementById('email').value.trim();
+        const password = document.getElementById('password').value;
+
+        btn.disabled = true;
+        btn.textContent = 'Logging in...';
+
+        try {
+          const res = await AuthAPI.login({ email, password });
+          saveSession(res.token, res.user);
+          showToast('Welcome back, ' + res.user.name + '! 👋', 'success');
+          
+          // Check if return URL is set
+          const params = new URLSearchParams(window.location.search);
+          const redirect = params.get('redirect') || 'index.html';
+          setTimeout(() => {
+            window.location.href = redirect;
+          }, 1000);
+        } catch (err) {
+          showToast(err.message || 'Login failed. Please try again.', 'error');
+          btn.disabled = false;
+          btn.textContent = 'Log in';
+        }
+      });
+    });
+  </script>
+</body>
+</html>

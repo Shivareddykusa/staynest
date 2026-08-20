@@ -1,0 +1,320 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Property Details — StayNest</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <div class="nav-inner">
+      <a href="index.html" class="logo">
+        <span class="logo-icon">🏡</span>
+        <span>Stay<strong>Nest</strong></span>
+      </a>
+
+      <div class="nav-links">
+        <a href="index.html">Explore</a>
+        <a href="host.html" id="nav-host-link" style="display:none;">Host Dashboard</a>
+      </div>
+
+      <div class="nav-actions">
+        <a href="login.html" id="nav-login" class="btn btn-outline">Log in</a>
+        <a href="register.html" id="nav-register" class="btn btn-primary">Sign up</a>
+
+        <div class="user-menu" id="nav-user-menu" style="display:none;">
+          <button class="user-avatar" id="nav-user-initial" onclick="toggleDropdown()">U</button>
+          <div class="user-dropdown" id="user-dropdown">
+            <div class="user-dropdown-header">
+              <strong id="drop-name">User</strong>
+              <small id="drop-email">user@example.com</small>
+            </div>
+            <a href="booking.html" class="dropdown-item">📅 My Bookings</a>
+            <a href="host.html" class="dropdown-item">🏠 Host a Property</a>
+            <button class="dropdown-item danger" id="btn-logout">🚪 Log out</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Details Page -->
+  <main class="detail-page" id="property-container">
+    <div class="loading-spinner">
+      <div class="spinner"></div>
+      <span>Loading property details from database...</span>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <div class="logo">🏡 <span>Stay<strong>Nest</strong></span></div>
+          <p>A modern three-tier vacation rental application built for DevOps & Cloud architecture.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Explore</h4>
+          <a href="index.html">All Properties</a>
+          <a href="booking.html">My Bookings</a>
+          <a href="host.html">Host Property</a>
+        </div>
+        <div class="footer-col">
+          <h4>Technology</h4>
+          <a href="#">Tier 1: HTML5 / CSS3 / JS</a>
+          <a href="#">Tier 2: Python / Flask / JWT</a>
+          <a href="#">Tier 3: MySQL / SQLAlchemy</a>
+        </div>
+        <div class="footer-col">
+          <h4>DevOps Stack</h4>
+          <a href="#">Docker & Docker Compose</a>
+          <a href="#">Jenkins CI/CD Pipeline</a>
+          <a href="#">AWS Deployment Ready</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <div>&copy; 2026 StayNest Inc. All rights reserved.</div>
+        <div>
+          <a href="#">Privacy</a>
+          <a href="#">Terms</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    let currentProperty = null;
+
+    async function initPropertyDetails() {
+      const container = document.getElementById('property-container');
+      const params = new URLSearchParams(window.location.search);
+      const id = params.get('id');
+
+      if (!id) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">⚠️</div>
+            <h3>No Property Selected</h3>
+            <p>Please select a property from the catalog.</p>
+            <a href="index.html" class="btn btn-primary">Browse Properties</a>
+          </div>`;
+        return;
+      }
+
+      try {
+        currentProperty = await PropertyAPI.get(id);
+        renderDetails(currentProperty);
+      } catch (err) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">❌</div>
+            <h3>Property Not Found</h3>
+            <p>${err.message || 'Unable to retrieve property information.'}</p>
+            <a href="index.html" class="btn btn-primary">Return Home</a>
+          </div>`;
+      }
+    }
+
+    function renderDetails(p) {
+      const container = document.getElementById('property-container');
+      
+      // Default dates: tomorrow and 3 days from now
+      const today = new Date();
+      const checkinDate = new Date(today);
+      checkinDate.setDate(today.getDate() + 1);
+      const checkoutDate = new Date(today);
+      checkoutDate.setDate(today.getDate() + 4);
+
+      const checkinStr = checkinDate.toISOString().split('T')[0];
+      const checkoutStr = checkoutDate.toISOString().split('T')[0];
+      const minDateStr = today.toISOString().split('T')[0];
+
+      // Build guest options
+      let guestOptions = '';
+      for (let i = 1; i <= (p.guests || 2); i++) {
+        guestOptions += `<option value="${i}">${i} guest${i > 1 ? 's' : ''}</option>`;
+      }
+
+      container.innerHTML = `
+        <div class="detail-breadcrumb">
+          <a href="index.html">Properties</a> / <span>${p.name}</span>
+        </div>
+
+        <h1 class="detail-title">${p.name}</h1>
+        <div class="detail-location">📍 ${p.location}</div>
+
+        <img src="${p.image_url || 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=1200&q=80'}" 
+             alt="${p.name}" 
+             class="detail-hero-img"
+             onerror="this.src='https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=1200&q=80'">
+
+        <div class="detail-grid">
+          <div class="detail-info">
+            <h2>About this place</h2>
+            <div class="detail-stats">
+              <div class="detail-stat">
+                <span class="stat-val">${p.bedrooms}</span>
+                <span class="stat-lbl">Bedrooms</span>
+              </div>
+              <div class="detail-stat">
+                <span class="stat-val">${p.guests}</span>
+                <span class="stat-lbl">Max Guests</span>
+              </div>
+              <div class="detail-stat">
+                <span class="stat-val">⭐ 4.9</span>
+                <span class="stat-lbl">Rating</span>
+              </div>
+            </div>
+
+            <div class="detail-desc">${p.description || 'Welcome to this wonderful stay. Perfectly equipped with modern comforts to ensure a delightful stay.'}</div>
+
+            <div style="margin-top: 36px; padding: 24px; background: var(--gray-100); border-radius: var(--radius);">
+              <h3 style="font-size: 1.1rem; margin-bottom: 12px; color: var(--gray-900);">What this place offers</h3>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; font-size: 0.9rem;">
+                <div>📶 High-speed Wi-Fi</div>
+                <div>❄️ Air conditioning</div>
+                <div>🍳 Fully equipped kitchen</div>
+                <div>🚗 Free parking on premises</div>
+                <div>🏊 Swimming access</div>
+                <div>🔒 24/7 Self check-in</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Booking Widget -->
+          <div class="booking-widget">
+            <div class="widget-price">
+              ${formatPrice(p.price)} <span>/ night</span>
+            </div>
+
+            <form id="booking-form">
+              <div class="widget-dates">
+                <div class="widget-date">
+                  <label for="book-checkin">Check-in</label>
+                  <input type="date" id="book-checkin" value="${checkinStr}" min="${minDateStr}" required>
+                </div>
+                <div class="widget-date">
+                  <label for="book-checkout">Check-out</label>
+                  <input type="date" id="book-checkout" value="${checkoutStr}" min="${checkinStr}" required>
+                </div>
+              </div>
+
+              <div class="widget-guests">
+                <label for="book-guests">Guests</label>
+                <select id="book-guests">
+                  ${guestOptions}
+                </select>
+              </div>
+
+              <div class="widget-summary">
+                <div class="widget-row">
+                  <span id="price-calc-label">${formatPrice(p.price)} × 3 nights</span>
+                  <span id="price-calc-subtotal">${formatPrice(p.price * 3)}</span>
+                </div>
+                <div class="widget-row">
+                  <span>Service fee (included)</span>
+                  <span>₹0</span>
+                </div>
+                <div class="widget-row total">
+                  <span>Total before taxes</span>
+                  <span id="price-calc-total">${formatPrice(p.price * 3)}</span>
+                </div>
+              </div>
+
+              <button type="submit" id="btn-book" class="btn btn-primary btn-block btn-lg">
+                Reserve Now
+              </button>
+            </form>
+
+            <div class="widget-host">
+              <div class="host-avatar">${(p.host_name || 'H').charAt(0).toUpperCase()}</div>
+              <div class="host-info">
+                <div class="host-name">Hosted by ${p.host_name || 'StayNest Host'}</div>
+                <div class="host-label">Verified Superhost</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+
+      // Attach dynamic calculation listeners
+      const inInput = document.getElementById('book-checkin');
+      const outInput = document.getElementById('book-checkout');
+      const bForm = document.getElementById('booking-form');
+
+      const updateCalculations = () => {
+        const nights = nightsBetween(inInput.value, outInput.value);
+        if (nights > 0) {
+          const total = nights * p.price;
+          document.getElementById('price-calc-label').textContent = `${formatPrice(p.price)} × ${nights} night${nights > 1 ? 's' : ''}`;
+          document.getElementById('price-calc-subtotal').textContent = formatPrice(total);
+          document.getElementById('price-calc-total').textContent = formatPrice(total);
+          document.getElementById('btn-book').disabled = false;
+        } else {
+          document.getElementById('price-calc-label').textContent = 'Invalid dates';
+          document.getElementById('price-calc-subtotal').textContent = '₹0';
+          document.getElementById('price-calc-total').textContent = '₹0';
+          document.getElementById('btn-book').disabled = true;
+        }
+      };
+
+      inInput.addEventListener('change', () => {
+        outInput.min = inInput.value;
+        if (outInput.value <= inInput.value) {
+          const nextDay = new Date(inInput.value);
+          nextDay.setDate(nextDay.getDate() + 1);
+          outInput.value = nextDay.toISOString().split('T')[0];
+        }
+        updateCalculations();
+      });
+
+      outInput.addEventListener('change', updateCalculations);
+
+      // Handle booking submission
+      bForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        if (!isLoggedIn()) {
+          showToast('Please log in to make a booking', 'warning');
+          setTimeout(() => {
+            window.location.href = `login.html?redirect=property.html?id=${p.id}`;
+          }, 1200);
+          return;
+        }
+
+        const btn = document.getElementById('btn-book');
+        btn.disabled = true;
+        btn.textContent = 'Processing reservation...';
+
+        const payload = {
+          property_id: p.id,
+          check_in: inInput.value,
+          check_out: outInput.value,
+          guests: parseInt(document.getElementById('book-guests').value)
+        };
+
+        try {
+          await BookingAPI.create(payload);
+          showToast('Booking confirmed! 🎉 Pack your bags!', 'success');
+          setTimeout(() => {
+            window.location.href = 'booking.html';
+          }, 1500);
+        } catch (err) {
+          showToast(err.message || 'Failed to complete booking', 'error');
+          btn.disabled = false;
+          btn.textContent = 'Reserve Now';
+        }
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', initPropertyDetails);
+  </script>
+</body>
+</html>

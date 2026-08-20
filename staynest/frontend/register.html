@@ -1,0 +1,114 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign up — StayNest</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="form-page">
+
+  <div class="form-card">
+    <div style="text-align:center; margin-bottom: 24px;">
+      <a href="index.html" class="logo" style="justify-content:center;">
+        <span class="logo-icon">🏡</span>
+        <span>Stay<strong>Nest</strong></span>
+      </a>
+    </div>
+
+    <h1>Create account</h1>
+    <p>Join StayNest to book unique places or host guests</p>
+
+    <form id="register-form">
+      <div class="form-group">
+        <label for="name">Full Name</label>
+        <input type="text" id="name" class="form-control" placeholder="John Doe" required autocomplete="name">
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email address</label>
+        <input type="email" id="email" class="form-control" placeholder="name@example.com" required autocomplete="email">
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password (min. 6 characters)</label>
+        <input type="password" id="password" class="form-control" placeholder="••••••••" required minlength="6" autocomplete="new-password">
+      </div>
+
+      <div class="form-group">
+        <label>I want to:</label>
+        <div class="role-selector">
+          <label>
+            <input type="radio" name="role" value="guest" class="role-option" checked>
+            <div class="role-label">
+              <span class="role-icon">🧳</span>
+              <span class="role-name">Book Stays</span>
+              <span class="role-desc">I am a traveler</span>
+            </div>
+          </label>
+
+          <label>
+            <input type="radio" name="role" value="host" class="role-option">
+            <div class="role-label">
+              <span class="role-icon">🏠</span>
+              <span class="role-name">Host Places</span>
+              <span class="role-desc">I have property</span>
+            </div>
+          </label>
+        </div>
+      </div>
+
+      <button type="submit" id="btn-submit" class="btn btn-primary btn-block btn-lg" style="margin-top: 10px;">
+        Create Account
+      </button>
+    </form>
+
+    <div class="form-footer">
+      Already have an account? <a href="login.html">Log in</a>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      if (isLoggedIn()) {
+        window.location.href = 'index.html';
+        return;
+      }
+
+      const form = document.getElementById('register-form');
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('btn-submit');
+        const name = document.getElementById('name').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const password = document.getElementById('password').value;
+        const role = document.querySelector('input[name="role"]:checked')?.value || 'guest';
+
+        if (password.length < 6) {
+          showToast('Password must be at least 6 characters long', 'warning');
+          return;
+        }
+
+        btn.disabled = true;
+        btn.textContent = 'Creating account...';
+
+        try {
+          const res = await AuthAPI.register({ name, email, password, role });
+          saveSession(res.token, res.user);
+          showToast('Account created successfully! 🎉', 'success');
+          setTimeout(() => {
+            window.location.href = role === 'host' ? 'host.html' : 'index.html';
+          }, 1200);
+        } catch (err) {
+          showToast(err.message || 'Registration failed', 'error');
+          btn.disabled = false;
+          btn.textContent = 'Create Account';
+        }
+      });
+    });
+  </script>
+</body>
+</html>
