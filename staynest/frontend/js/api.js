@@ -4,7 +4,7 @@
    The frontend NEVER talks to MySQL directly.
    ======================================== */
 
-const API_BASE = 'http://localhost:5000/api';
+const API_BASE = 'http://3.6.89.35:5000/api';
 
 // ─── Token helpers ─────────────────────────────────────────
 const getToken  = ()    => localStorage.getItem('sn_token');
